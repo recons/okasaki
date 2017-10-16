@@ -30,16 +30,16 @@ instance FiniteMap BinTreeMap where
         | k == candidate && v == rootV = tree
         | k == candidate = Node topLeft (rootK, v) topRight
         | otherwise = apply $ Node Empty (k, v) Empty
-      go apply (Node left (k', v') right) candidate
-        | k <= k' = go (\t -> Node t (k', v') right) left k'
-        | otherwise = go (\t -> Node left (k', v') t) right candidate
+      go apply (Node left pair@(k', _) right) candidate
+        | k <= k' = go (\t -> Node t pair right) left k'
+        | otherwise = go (\t -> Node left pair t) right candidate
 
   lookup k (Map Empty) = Nothing
-  lookup k (Map tree@(Node _ pair _)) = go tree pair
+  lookup k (Map tree@(Node _ rootPair _)) = go tree rootPair
     where
       go Empty (k', v)
         | k == k' = Just v
         | otherwise = Nothing
-      go (Node left pair'@(k', _) right) candidate
-        | k <= k' = go left pair'
+      go (Node left pair@(k', _) right) candidate
+        | k <= k' = go left pair
         | otherwise = go right candidate
